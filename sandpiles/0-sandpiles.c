@@ -106,4 +106,3 @@ void topple(int grid[3][3])
 		}
 	}
 }
-
