@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 int advanced_binary(int *array, size_t size, int value);
-int find_index(int *an_array, size_t start, size_t end, int val);
+int recursive_advanced_binary(int *array, int left, int right, int value);
+void print_array(int *array, int left, int right);
 
 #endif
