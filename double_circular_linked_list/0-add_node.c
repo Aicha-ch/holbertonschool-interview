@@ -1,44 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "list.h"
 
 /**
- * add_node_end - adds node to end of list
- * @list: address of pointer to head
- * @str: string to copy & insert
- * Return: pointer to new node
+ * add_node_end - Add a new node to the end of a double circular linked list.
+ * @list: The list to modify.
+ * @str: The string to copy into the new node.
+ *
+ * Return: Address of the new node, or NULL on failure.
  */
 List *add_node_end(List **list, char *str)
 {
-	List *new_node = NULL, *node;
+	List *new_node, *last_node;
+	char *str_copy;
 
-	if (!list)
+	if (list == NULL || str == NULL)
 		return (NULL);
-	new_node = malloc(sizeof(*new_node));
-	if (!new_node)
+
+	new_node = malloc(sizeof(List));
+	if (new_node == NULL)
 		return (NULL);
-	new_node->prev = new_node->next = NULL;
-	new_node->str = strdup(str);
-	if (str && !new_node->str)
-		return (free(new_node), NULL);
-	if (!*list)
+
+	str_copy = strdup(str);
+	if (str_copy == NULL)
 	{
-		new_node->prev = new_node->next = new_node;
-		return (*list = new_node);
+		free(new_node);
+		return (NULL);
 	}
-	node = (*list)->prev;
-	new_node->next = *list;
-	node->next = new_node;
-	new_node->prev = node;
-	(*list)->prev = new_node;
+
+	new_node->str = str_copy;
+	if (*list == NULL)
+	{
+		new_node->next = new_node;
+		new_node->prev = new_node;
+		*list = new_node;
+	}
+	else
+	{
+		last_node = (*list)->prev;
+
+		new_node->next = *list;
+		new_node->prev = last_node;
+
+		last_node->next = new_node;
+		(*list)->prev = new_node;
+	}
+
 	return (new_node);
 }
 
 /**
- * add_node_end - adds node to end of list
- * @list: address of pointer to head
- * @str: string to copy & insert
- * Return: pointer to new node
+ * add_node_begin - Add a new node to the beginning.
+ * @list: The list to modify.
+ * @str: The string to copy into the new node.
+ *
+ * Return: Address of the new node, or NULL on failure.
  */
 List *add_node_begin(List **list, char *str)
 {
-	return (add_node_end(list, str) ? *list = (*list)->prev : NULL);
+	List *new_node, *last_node;
+	char *str_copy;
+
+	if (list == NULL || str == NULL)
+		return (NULL);
+
+	new_node = malloc(sizeof(List));
+	if (new_node == NULL)
+		return (NULL);
+
+	str_copy = strdup(str);
+	if (str_copy == NULL)
+	{
+		free(new_node);
+		return (NULL);
+	}
+
+	new_node->str = str_copy;
+	if (*list == NULL)
+	{
+		new_node->next = new_node;
+		new_node->prev = new_node;
+		*list = new_node;
+	}
+	else
+	{
+		last_node = (*list)->prev;
+
+		new_node->next = *list;
+		new_node->prev = last_node;
+
+		last_node->next = new_node;
+		(*list)->prev = new_node;
+
+		*list = new_node;
+	}
+
+	return (new_node);
 }
