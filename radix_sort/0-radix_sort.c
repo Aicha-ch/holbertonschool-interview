@@ -1,72 +1,51 @@
 #include "sort.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /**
- * getMax - A utility function to get the maximum value in an array
- * @array: The array to be examined
- * @size: Number of elements in the array
- *
- * Return: The maximum value in the array
+ * radix_sort - sorts by RADIX
+ * @A: array to sort
+ * @size: size of array
  */
-int getMax(int *array, size_t size)unction that sorts an array of integers in ascending orde
+void radix_sort(int *A, size_t size)
 {
-	int max = array[0];
 	size_t i;
+	int max = INT_MIN, *B;
+	long exp;
 
-	for (i = 1; i < size; i++)
-		if (array[i] > max)
-			max = array[i];
-	return (max);
+	if (!A || size < 2)
+		return;
+	B = malloc(sizeof(*B) * size);
+	if (!B)
+		return;
+	for (i = 0; i < size; i++)
+		max = A[i] > max ? A[i] : max;
+	for (exp = 1; max / exp > 0; exp *= RADIX)
+	{
+		count_sort(A, size, B, exp);
+		print_array(A, size);
+	}
+	free(B);
 }
 
 /**
- * countSort - A function to do counting sort of array according to
- * the digit represented by exp
- * @array: The array to be sorted
- * @size: Number of elements in the array
- * @exp: Exponent representing the current digit position
+ * count_sort - sort by current digit
+ * @A: array to sort
+ * @size: size of array
+ * @B: malloced temp array
+ * @exp: current digital exponent
+ * Return: if array changed
  */
-void countSort(int *array, size_t size, int exp)
+int count_sort(int *A, ssize_t size, int *B, long exp)
 {
-	int *output = malloc(size * sizeof(int));
-	int count[10] = {0};
-	size_t i;
-	int j;
+	ssize_t i;
+	int count[RADIX] = {0}, ret = 0;
 
 	for (i = 0; i < size; i++)
-		count[(array[i] / exp) % 10]++;
-
-	for (j = 1; j < 10; j++)
-		count[j] += count[j - 1];
-
-	/* Build the output array */
-	for (i = size; i > 0; i--)
-	{
-		output[count[(array[i - 1] / exp) % 10] - 1] = array[i - 1];
-		count[(array[i - 1] / exp) % 10]--;
-	}
-
+		count[(A[i] / exp) % RADIX]++, B[i] = 0;
+	for (i = 1; i < RADIX; i++)
+		count[i] += count[i - 1];
+	for (i = size - 1; i >= 0; i--)
+		B[--count[(A[i] / exp) % RADIX]] = A[i];
 	for (i = 0; i < size; i++)
-		array[i] = output[i];
-
-	free(output);
-}
-
-/**
- * radix_sort - Sorts an array of integers in ascending order using the
- * Radix sort algorithm
- * @array: The array to be sorted
- * @size: Number of elements in the array
- */
-void radix_sort(int *array, size_t size)
-{
-	int max = getMax(array, size);
-	int exp;
-
-	for (exp = 1; max / exp > 0; exp *= 10)
-	{
-		countSort(array, size, exp);
-		print_array(array, size);
-	}
+		A[i] = B[i];
+	return (ret);
 }
